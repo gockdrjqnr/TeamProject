@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load bootstrap4 %}
+{% block container %}
+
+
+<h3 class="mb-4 mytext">인기차트</h3>
+{% for int in ints %}
+    <div>
+        <form action="{% url 'search:chart' %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input name="number" type="hidden" value="{{ int }}">{{ int }}</input>
+            <input type="submit" value="검색" style="text-align: center;" >
+        </form>
+    </div>
+{% endfor %}
+
+
+{% endblock %}
