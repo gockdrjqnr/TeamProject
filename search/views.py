@@ -67,22 +67,33 @@ def keyword(request):
 
         contents = Keywords.objects.all()
 
-        """
-        pybo 목록출력
-        """
-        # ---------------------------------------- [edit] ---------------------------------------- #
         # 입력 파라미터
         page = request.GET.get('page', '1')  # 페이지
 
         # 조회
-        song = Keywords.objects.order_by('-id')
+        song = Keywords.objects.all()
 
         # 페이징처리
         paginator = Paginator(song, 10)  # 페이지당 10개씩 보여주기
         page_obj = paginator.get_page(page)
 
         return render(request, 'keyword.html', {'contents': contents, 'keyword': request.POST['name'], 'song': page_obj,
-                                                'video': 'https://www.youtube.com/embed/nM0xDI5R50E'})
+                                                'qs': parse.quote(request.POST['name'])})
+    else:
+
+        # 입력 파라미터
+        page = request.GET.get('page', '1')  # 페이지
+
+        # 조회
+        song = Keywords.objects.all()
+
+        # 페이징처리
+        paginator = Paginator(song, 10)  # 페이지당 10개씩 보여주기
+        page_obj = paginator.get_page(page)
+
+        return render(request, 'keyword.html', {'keyword': request.GET['name'], 'song': page_obj,
+                                                'qs': parse.quote(request.GET['name'])})
+
 
 
 import re  # 정규표현식
