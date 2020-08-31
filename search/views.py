@@ -6,6 +6,7 @@ from urllib.request import urlopen
 import datetime
 from urllib import parse
 from django.core.paginator import Paginator
+import math
 # Create your views here.
 
 
@@ -65,34 +66,51 @@ def keyword(request):
             tmp = Keywords(song=song, album=album, artist=artist, lyrics=lyrics, release=release, genre=genre, image=image)
             tmp.save()
 
-        contents = Keywords.objects.all()
 
-        # 입력 파라미터
-        page = request.GET.get('page', '1')  # 페이지
-
-        # 조회
         song = Keywords.objects.all()
-
-        # 페이징처리
-        paginator = Paginator(song, 10)  # 페이지당 10개씩 보여주기
+        paginator = Paginator(song, 10)
+        page = request.GET.get('page', 1)
         page_obj = paginator.get_page(page)
 
-        return render(request, 'keyword.html', {'contents': contents, 'keyword': request.POST['name'], 'song': page_obj,
+
+
+        page_numbers_range = 5
+
+        max_index = len(paginator.page_range)
+        current_page = int(page) if page else 1
+        start_index = int((current_page - 1) / page_numbers_range) * page_numbers_range
+        end_index = start_index + page_numbers_range
+
+        if end_index >= max_index:
+            end_index = max_index
+        paginator_range = paginator.page_range[start_index:end_index]
+
+        return render(request, 'keyword.html', {'keyword': request.POST['name'], 'song': page_obj,
+                                                'paginator_range': paginator_range,
                                                 'qs': parse.quote(request.POST['name'])})
+
     else:
-
-        # 입력 파라미터
-        page = request.GET.get('page', '1')  # 페이지
-
-        # 조회
         song = Keywords.objects.all()
-
-        # 페이징처리
-        paginator = Paginator(song, 10)  # 페이지당 10개씩 보여주기
+        paginator = Paginator(song, 10)
+        page = request.GET.get('page', 1)
         page_obj = paginator.get_page(page)
 
-        return render(request, 'keyword.html', {'keyword': request.GET['name'], 'song': page_obj,
-                                                'qs': parse.quote(request.GET['name'])})
+        page_numbers_range = 5
+
+        max_index = len(paginator.page_range)
+        current_page = int(page) if page else 1
+        start_index = int((current_page - 1) / page_numbers_range) * page_numbers_range
+        end_index = start_index + page_numbers_range
+
+        if end_index >= max_index:
+            end_index = max_index
+        paginator_range = paginator.page_range[start_index:end_index]
+
+
+        return render(request, 'keyword.html',{ 'keyword': request.GET['name'], 'song': page_obj,
+                                                'paginator_range': paginator_range, 'qs': parse.quote(request.GET['name'])})
+
+
 
 
 
